@@ -61,23 +61,73 @@ if (filterSelect && filterItems.length && selectValue) {
 }
 
 /**
- * PORTFOLIO FILTER BUTTONS - Defensive check
+ * PORTFOLIO FILTER BUTTONS - Enhanced with better filtering
  */
 const filterBtns = document.querySelectorAll("[data-filter-btn]");
 const portfolioItems = document.querySelectorAll("[data-filter-item]");
 
 if (filterBtns.length && portfolioItems.length) {
+  // Set first button as active by default
+  if (filterBtns[0]) filterBtns[0].classList.add("active");
+
   filterBtns.forEach(btn => {
     btn.addEventListener("click", function () {
+      // Remove active class from all buttons
       filterBtns.forEach(b => b.classList.remove("active"));
+      // Add active class to clicked button
       this.classList.add("active");
 
       const selectedCategory = this.innerText.trim().toLowerCase();
 
       portfolioItems.forEach(item => {
         const itemCategory = item.dataset.category.toLowerCase();
-        item.classList.toggle("active", selectedCategory === "all" || itemCategory === selectedCategory);
+        
+        if (selectedCategory === "all" || itemCategory.includes(selectedCategory)) {
+          item.classList.add("active");
+        } else {
+          item.classList.remove("active");
+        }
       });
     });
+  });
+}
+
+/**
+ * FORM VALIDATION AND ENHANCEMENT
+ */
+const contactForm = document.querySelector("[data-form]");
+const formInputs = document.querySelectorAll("[data-form-input]");
+const formBtn = document.querySelector("[data-form-btn]");
+
+if (contactForm && formInputs.length && formBtn) {
+  // Enable form button when all required fields are filled
+  formInputs.forEach(input => {
+    input.addEventListener("input", function() {
+      const allFilled = Array.from(formInputs).every(inp => inp.value.trim() !== "");
+      formBtn.disabled = !allFilled;
+    });
+  });
+
+  // Handle form submission
+  contactForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    // Basic form validation
+    let isValid = true;
+    formInputs.forEach(input => {
+      if (input.value.trim() === "") {
+        isValid = false;
+        input.style.borderColor = "var(--bittersweet-shimmer)";
+      } else {
+        input.style.borderColor = "var(--jet)";
+      }
+    });
+
+    if (isValid) {
+      // Show success message (you can replace this with actual form submission)
+      alert("Thank you for your message! I'll get back to you soon.");
+      contactForm.reset();
+      formBtn.disabled = true;
+    }
   });
 }
